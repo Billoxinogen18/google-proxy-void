@@ -16,7 +16,21 @@ const server = http.createServer();
 
 
 server.on('request', (request, response) => {
+    // Prevent multiple responses
+    let responseSent = false;
+    
+    const originalEnd = response.end;
+    response.end = function(...args) {
+        if (responseSent) return;
+        responseSent = true;
+        return originalEnd.apply(this, args);
+    };
 
+    const originalWriteHead = response.writeHead;
+    response.writeHead = function(...args) {
+        if (responseSent) return;
+        return originalWriteHead.apply(this, args);
+    };
 
     if (bare.shouldRoute(request)) {
         bare.routeRequest(request, response);
