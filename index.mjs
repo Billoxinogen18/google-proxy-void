@@ -16,6 +16,8 @@ const server = http.createServer();
 
 
 server.on('request', (request, response) => {
+    console.log(`[REQUEST] ${request.method} ${request.url}`);
+    
     // Prevent multiple responses
     let responseSent = false;
     
@@ -33,8 +35,10 @@ server.on('request', (request, response) => {
     };
 
     if (bare.shouldRoute(request)) {
+        console.log(`[BARE] Routing to bare server`);
         bare.routeRequest(request, response);
     } else {
+        console.log(`[STATIC] Serving static file: ${request.url}`);
         serve.serve(request, response);
     }
 });
